@@ -11,6 +11,10 @@
 using namespace cv;
 using namespace std;
 
+ofstream outputFile;
+long int frameCount = 0;
+string inputFile;
+
 //#define FBF //frame by frame
 
 int nTargetColor = 2;
@@ -147,11 +151,13 @@ void getSearchArea(vector<Armor> &armors, vector<Rect> &searchAreas, int width, 
 
 void outputResult(Armor *resultArmor) {
 //    i2c.send(*resultArmor);
-    printf("x: %f, y: %f, z: %fm, vx: %frad/s, vy: %frad/s, vz: %fm/s\n", resultArmor->x, resultArmor->y, resultArmor->z, resultArmor->angular_velocity_x, resultArmor->angular_velocity_y, resultArmor->velocity_z);
+//    printf("x: %f, y: %f, z: %fm, vx: %frad/s, vy: %frad/s, vz: %fm/s\n", resultArmor->x, resultArmor->y, resultArmor->z, resultArmor->angular_velocity_x, resultArmor->angular_velocity_y, resultArmor->velocity_z);
+	outputFile << input << " " << frame << " " <<resultArmor->x << " " <<resultArmor->y << endl;
 }
 
 int main(int argc, char **argv) {
 
+	outputFile.open("output.txt");
     Mat pSrcImage;
     FileStorage fs;
     if (argc > 1) {
@@ -162,7 +168,7 @@ int main(int argc, char **argv) {
     Settings settings;
     settings.read(fs);
     VideoCapture cap;
-
+	inputFile = settings.fileName;
     if (settings.cameraID != -1) {
         cap.open(settings.cameraID);
     } else {
@@ -206,7 +212,7 @@ int main(int argc, char **argv) {
 
     bool playVideo = true;
     clock_t totalTime = clock();
-    long int frameCount = 0;
+    //long int frameCount = 0;
 #endif //ifndef NDEBUG
 
     vector<Armor> armors;
@@ -343,5 +349,7 @@ int main(int argc, char **argv) {
     cout << "detection rate: " << (double)foundCount / frameCount << endl;
 #endif
     cap.release();
+	outputFile.close();
     return 0;
+	
 }
